@@ -12,7 +12,7 @@ import java.nio.ByteBuffer;
 
 public class EncodingUtil {
 
-    public static void convertToWav(File fileToConvert, String name, int rate, short channels) {
+    public static void convertToWav(File fileToConvert, File destinationFile, int rate, short channels) {
         try {
             int bitsPerSample = 16;
             int bytesPerSample = bitsPerSample/8;
@@ -26,7 +26,7 @@ public class EncodingUtil {
             int chunkSize = 36 + dataSize;
 
             OutputStream os;
-            os = new FileOutputStream(new File(fileToConvert.getParentFile(), name + ".wav"));
+            os = new FileOutputStream(destinationFile);
             BufferedOutputStream bos = new BufferedOutputStream(os);
             DataOutputStream outFile = new DataOutputStream(bos);
 

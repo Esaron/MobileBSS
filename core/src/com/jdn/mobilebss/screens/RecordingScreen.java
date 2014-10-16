@@ -4,19 +4,16 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.jdn.mobilebss.MobileBss;
-import com.jdn.mobilebss.controller.SignalController;
-import com.jdn.mobilebss.input.CursorInputProcessor;
+import com.jdn.mobilebss.controller.AudioController;
+import com.jdn.mobilebss.view.ButtonRenderer;
 import com.jdn.mobilebss.view.SignalRenderer;
 
 public class RecordingScreen implements Screen {
-    private SpriteBatch batch;
-    private Texture img;
     private InputMultiplexer plexer = new InputMultiplexer();
-    private SignalRenderer renderer;
-    private SignalController controller;
+    private ButtonRenderer buttonRenderer;
+    private AudioController audioController;
+    private SignalRenderer signalRenderer;
 
     public RecordingScreen() {}
 
@@ -25,11 +22,9 @@ public class RecordingScreen implements Screen {
         GL20 gl = Gdx.graphics.getGL20();
         gl.glClear(GL20.GL_COLOR_BUFFER_BIT | GL20.GL_DEPTH_BUFFER_BIT);
 
-        controller.update(delta);
-        renderer.render(delta, gl);
-        batch.begin();
-        batch.draw(img, MobileBss.WIDTH/2 - img.getWidth()/2, MobileBss.HEIGHT/2 - img.getHeight()/2);
-        batch.end();
+        audioController.update(delta);
+        buttonRenderer.render(delta, gl);
+        signalRenderer.render(delta, gl);
     }
 
     @Override
@@ -39,14 +34,15 @@ public class RecordingScreen implements Screen {
         Gdx.gl.glDepthFunc(GL20.GL_LESS);
         MobileBss.WIDTH = width;
         MobileBss.HEIGHT = height;
+        buttonRenderer.resize(width, height);
+        signalRenderer.resize(width, height);
     }
 
     @Override
     public void show() {
-        batch = new SpriteBatch();
-        img = new Texture("CWRU.jpg");
-        renderer = SignalRenderer.getInstance();
-        plexer.addProcessor(new CursorInputProcessor(controller));
+        signalRenderer = SignalRenderer.getInstance();
+        buttonRenderer = ButtonRenderer.getInstance();
+        plexer.addProcessor(buttonRenderer.getStage());
         Gdx.input.setInputProcessor(plexer);
     }
 
@@ -70,11 +66,11 @@ public class RecordingScreen implements Screen {
 
     }
 
-    public SignalController getController() {
-        return controller;
+    public AudioController getAudioController() {
+        return audioController;
     }
 
-    public void setController(SignalController controller) {
-        this.controller = controller;
+    public void setAudioController(AudioController controller) {
+        this.audioController = controller;
     }
 }

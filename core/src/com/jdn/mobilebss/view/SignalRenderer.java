@@ -31,6 +31,10 @@ public class SignalRenderer {
         start = System.currentTimeMillis();
     }
 
+    public void resize(int width, int height) {
+        
+    }
+
     public void render(float delta, GL20 gl) {
         long time = System.currentTimeMillis() - start;
     }

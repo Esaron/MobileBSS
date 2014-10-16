@@ -7,8 +7,13 @@ public class FileUtil {
     public static File overwriteFile(File dir, String name)
             throws IOException {
         File file = new File(dir, name);
-        if (!dir.exists()) {
-            dir.mkdirs();
+        return overwriteFile(file);
+    }
+
+    public static File overwriteFile(File file)
+            throws IOException {
+        if (!file.getParentFile().exists()) {
+            file.getParentFile().mkdirs();
         }
         if (file.exists()) {
             if (!file.delete()) {
