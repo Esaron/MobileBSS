@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
 public class EncodingUtil {
 
@@ -60,6 +61,27 @@ public class EncodingUtil {
 
     public static byte[] shortToByteArray(short s) {
         return reverseBytes(ByteBuffer.allocate(2).putShort(s).array());
+    }
+
+    public static short[] byteArrayToShortArray(byte[] bytes, ByteOrder order){
+        short[] result = new short[bytes.length/2];
+        for (int i = 0; i < bytes.length; i += 2) {
+            byte[] shortBytes = {bytes[i], bytes[i+1]};
+            result[i/2] = byteArrayToShort(shortBytes, order);
+        }
+        return result;
+    }
+
+    public static short byteArrayToShort(byte[] bytes, ByteOrder order) {
+        if (bytes.length != 2) {
+            throw new IllegalArgumentException("There are only two bytes per short");
+        }
+        if (order.equals(ByteOrder.BIG_ENDIAN)) {
+            return (short)((bytes[0] << 8) + (bytes[1] & 0xff));
+        }
+        else {
+            return (short)((bytes[1] << 8) + (bytes[0] & 0xff));
+        }
     }
 
     public static byte[] reverseBytes(byte[] bytes) {

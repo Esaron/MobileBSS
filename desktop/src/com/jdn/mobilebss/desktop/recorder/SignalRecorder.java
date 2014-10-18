@@ -1,8 +1,7 @@
 package com.jdn.mobilebss.desktop.recorder;
 
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import com.badlogic.gdx.files.FileHandle;
+import com.jdn.mobilebss.controller.PlayerCompletionListener;
 import com.jdn.mobilebss.facade.ISignalRecorder;
 
 
@@ -53,6 +52,19 @@ public class SignalRecorder implements ISignalRecorder {
             throws IllegalStateException, IOException {
         // TODO Auto-generated method stub
         
+    }
+
+    @Override
+    public void addPlayerCompletionListener(
+            PlayerCompletionListener playerCompletionListener) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public long getRate() {
+        // TODO Auto-generated method stub
+        return 0;
     }
 
 //    private Mixer

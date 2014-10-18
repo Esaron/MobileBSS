@@ -2,31 +2,22 @@ package com.jdn.mobilebss.view;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Button;
-import com.badlogic.gdx.scenes.scene2d.ui.Dialog;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.scenes.scene2d.utils.SpriteDrawable;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
-import com.badlogic.gdx.utils.Logger;
 import com.badlogic.gdx.utils.viewport.ScreenViewport;
 import com.jdn.mobilebss.MobileBss;
 
 public class ButtonRenderer {
     private static ButtonRenderer renderer;
-    private static int buttonSize = MobileBss.WIDTH/6;
     private static Stage stage = new Stage(new ScreenViewport());
     private static SpriteBatch batch = new SpriteBatch();
+    public static int buttonSize = MobileBss.WIDTH/6;
 
     public static ButtonRenderer getInstance() {
         if (renderer == null) {

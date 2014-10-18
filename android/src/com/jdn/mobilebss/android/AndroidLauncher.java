@@ -11,6 +11,6 @@ public class AndroidLauncher extends AndroidApplication {
     protected void onCreate (Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
-        initialize(new MobileBss(new SignalRecorder(this.getContext())), config);
+        initialize(new MobileBss(new SignalRecorder()), config);
     }
 }

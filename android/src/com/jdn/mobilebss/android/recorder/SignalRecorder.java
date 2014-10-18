@@ -2,24 +2,18 @@ package com.jdn.mobilebss.android.recorder;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileDescriptor;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URI;
-import android.content.Context;
-import android.content.res.AssetFileDescriptor;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnCompletionListener;
 import android.media.MediaRecorder.AudioSource;
-import android.net.Uri;
 import android.util.Log;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
-import com.badlogic.gdx.backends.android.AndroidAudio;
-import com.badlogic.gdx.backends.android.AndroidMusic;
-import com.badlogic.gdx.files.FileHandle;
+import com.jdn.mobilebss.controller.PlayerCompletionListener;
 import com.jdn.mobilebss.facade.ISignalRecorder;
 import com.jdn.mobilebss.util.EncodingUtil;
 import com.jdn.mobilebss.util.FileUtil;
@@ -31,7 +25,6 @@ public class SignalRecorder implements ISignalRecorder {
     private static final short[] CHANNELS = new short[] { AudioFormat.CHANNEL_IN_STEREO };
     private static final String OUT_PATH = "output/";
 
-    private Context context;
     private MediaPlayer player;
     private FileInputStream signalInputStream;
     private AudioRecord recorder;
@@ -40,10 +33,9 @@ public class SignalRecorder implements ISignalRecorder {
     private int bufferSize;
     private long rate;
     private int channels;
-    private byte[] signal;
+    private byte[] signal = {(byte)0xff, (byte)0xff};
 
-    public SignalRecorder(Context context) {
-        this.context = context;
+    public SignalRecorder() {
         recorder = findAudioRecord();
     }
 
@@ -55,6 +47,11 @@ public class SignalRecorder implements ISignalRecorder {
     @Override
     public byte[] getSignal() {
         return signal;
+    }
+
+    @Override
+    public long getRate() {
+        return rate;
     }
 
     @Override
@@ -96,8 +93,8 @@ public class SignalRecorder implements ISignalRecorder {
             recorder.read(signalBuffer, 0, bufferSize);
             Log.d("Audio Buffer", "Writing bytes to stream: " + signalBuffer.toString());
             signalStream.write(signalBuffer, 0, bufferSize);
+            signal = signalStream.toByteArray();
         }
-        signal = signalStream.toByteArray();
     }
 
     @Override
@@ -119,13 +116,7 @@ public class SignalRecorder implements ISignalRecorder {
 
         Log.d("Audio Output WAV", "Converting to WAV");
         EncodingUtil.convertToWav(rawFile, wavFile, (int)rate, (short)channels);//UUID.randomUUID().toString());
-        try {
-            initPlayer(wavFile);
-        }
-        catch(Exception e) {
-            Log.e("MediaPlayer", "Unable to initialize MediaPlayer:");
-            e.printStackTrace();
-        }
+        initPlayer(wavFile);
     }
 
     @Override
@@ -151,17 +142,38 @@ public class SignalRecorder implements ISignalRecorder {
         }
     }
 
-    private void initPlayer(File file)
-            throws IllegalArgumentException, SecurityException, IllegalStateException, IOException {
+    private void initPlayer(File file) {
         if (player == null) {
             player = new MediaPlayer();
         }
         else {
             player.reset();
         }
-        signalInputStream = new FileInputStream(file);
-        player.setDataSource(signalInputStream.getFD());
-        player.prepare();
+        try {
+            signalInputStream = new FileInputStream(file);
+        }
+        catch(FileNotFoundException e) {
+            Log.d("Stream Load", "Unable to locate file:");
+            e.printStackTrace();
+        }
+        try {
+            player.setDataSource(signalInputStream.getFD());
+            player.prepare();
+        }
+        catch(IOException e) {
+            Log.d("MediaPlayer", "Unable to prepare MediaPlayer:");
+            e.printStackTrace();
+        }
+    }
+
+    public void addPlayerCompletionListener(PlayerCompletionListener listener) {
+        final PlayerCompletionListener finalListener = listener;
+        player.setOnCompletionListener(new OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                finalListener.complete();
+            }
+        });
     }
 
     private AudioRecord findAudioRecord() {
