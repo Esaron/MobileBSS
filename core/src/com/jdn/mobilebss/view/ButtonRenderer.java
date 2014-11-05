@@ -28,16 +28,33 @@ public class ButtonRenderer {
 
     private List<ImageButton> buttons = new ArrayList<ImageButton>();
 
-    private ImageButton playButton = createButton("play.png", "play_dark.png", "play_dark.png",
-            buttonSize, buttonSize);
-    private ImageButton pauseButton = createButton("pause.png", "pause_dark.png", "pause_dark.png",
-            buttonSize, buttonSize);
-    private ImageButton stopButton = createButton("stop.png", "stop_dark.png", "stop_dark.png",
-            buttonSize, buttonSize);
-    private ImageButton recordButton = createButton("record.png", "record_dark.png", "record_dark.png",
-            buttonSize, buttonSize);
+    private ImageButton playButton;
+    private ImageButton pauseButton;
+    private ImageButton stopButton;
+    private ImageButton recordButton;
 
     private ButtonRenderer() {
+        playButton = createButton("play", "play_dark", "play_dark",
+                buttonSize, buttonSize);
+        pauseButton = createButton("pause", "pause_dark", "pause_dark",
+                buttonSize, buttonSize);
+        stopButton = createButton("stop", "stop_dark", "stop_dark",
+                buttonSize, buttonSize);
+        recordButton = createButton("record", "record_dark", "record_dark",
+                buttonSize, buttonSize);
+        addButtons(playButton, pauseButton, stopButton, recordButton);
+    }
+
+    public void refreshButtons() {
+        clearButtons();
+        playButton = createButton("play", "play_dark", "play_dark",
+                buttonSize, buttonSize);
+        pauseButton = createButton("pause", "pause_dark", "pause_dark",
+                buttonSize, buttonSize);
+        stopButton = createButton("stop", "stop_dark", "stop_dark",
+                buttonSize, buttonSize);
+        recordButton = createButton("record", "record_dark", "record_dark",
+                buttonSize, buttonSize);
         addButtons(playButton, pauseButton, stopButton, recordButton);
     }
 
@@ -75,6 +92,19 @@ public class ButtonRenderer {
         button.pack();
     }
 
+    public void clearButtons() {
+        for (int i = 0; i < buttons.size(); i++) {
+            ImageButton button = buttons.get(i);
+            button.clear();
+            button.remove();
+            buttons.remove(i);
+        }
+        playButton = null;
+        pauseButton = null;
+        stopButton = null;
+        recordButton = null;
+    }
+
     public void resize(int width, int height) {
         buttonSize = width/6;
         stage.getViewport().update(width, height, true);
@@ -95,17 +125,17 @@ public class ButtonRenderer {
         return stage;
     }
 
-    private ImageButton createButton(String iconPath, String downIconPath, String checkedIconPath,
+    private ImageButton createButton(String iconName, String downIconName, String checkedIconName,
             int width, int height) {
-        Sprite defaultSprite = new Sprite(new Texture(Gdx.files.internal(iconPath)));
+        Sprite defaultSprite = MobileBss.TEXTURES.createSprite(iconName);
         defaultSprite.setSize(width, height);
         SpriteDrawable defaultDrawable = new SpriteDrawable(defaultSprite);
 
-        Sprite downSprite = new Sprite(new Texture(Gdx.files.internal(downIconPath)));
+        Sprite downSprite = MobileBss.TEXTURES.createSprite(downIconName);
         downSprite.setSize(width, height);
         SpriteDrawable downDrawable = new SpriteDrawable(downSprite);
 
-        Sprite checkedSprite = new Sprite(new Texture(Gdx.files.internal(checkedIconPath)));
+        Sprite checkedSprite = MobileBss.TEXTURES.createSprite(checkedIconName);
         checkedSprite.setSize(width, height);
         SpriteDrawable checkedDrawable = new SpriteDrawable(checkedSprite);
 

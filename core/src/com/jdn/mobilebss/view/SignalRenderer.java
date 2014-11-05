@@ -24,9 +24,10 @@ public class SignalRenderer {
     private int subWindowHeight = signalWindowHeight/2;
     private int signalMax = subWindowHeight/2;
     private int signalWindowWidth = MobileBss.WIDTH;
-    private int timeWindowSeconds = 5;
+    private int timeWindowSeconds = 3;
     private long dataPoints;
-    private long betweenDataPoints;
+    private long dataPointsInTimeWindow;
+    private long betweenPoints;
 
     private ShapeRenderer shapeRenderer = new ShapeRenderer();
     private ISignalRecorder recorder;
@@ -55,33 +56,32 @@ public class SignalRenderer {
     public void render(float delta, GL20 gl) {
         if (recorder != null) {
             short[] signal = EncodingUtil.byteArrayToShortArray(recorder.getSignal(), ByteOrder.LITTLE_ENDIAN);
-            dataPoints = Math.min(timeWindowSeconds * recorder.getRate(), signal.length);
-            betweenDataPoints = (long) Math.ceil(((double)dataPoints)/signalWindowWidth);
+            dataPoints = signal.length;
+            dataPointsInTimeWindow = timeWindowSeconds*recorder.getRate();
+            betweenPoints = (long)((float)dataPointsInTimeWindow/signalWindowWidth);
+            if (betweenPoints % 2 != 0) {
+                betweenPoints -= 1;
+            }
             int i = 0;
             shapeRenderer.begin(ShapeType.Line);
             shapeRenderer.setColor(Color.GREEN);
-            for (int j = 0; j < dataPoints; j += betweenDataPoints) {
+            for (int j = 0; j < signal.length; j += betweenPoints) {
                 int xStart = i++;
-                int signalStart = j;
-                j += betweenDataPoints;
-                if (j > signal.length - 1){
-                    j = signal.length - 1;
+                int signal1Start = j;
+                int signal2Start = j+1;
+                j += betweenPoints;
+                if (j > dataPointsInTimeWindow || j > signal.length - 2){
+                    break;
                 }
-                shapeRenderer.line(xStart, normalizeToWindow(signal[signalStart]), i++, normalizeToWindow(signal[j]));
+                shapeRenderer.line(xStart, normalizeToWindow(signal[signal1Start]), i++, normalizeToWindow(signal[j]));
+                shapeRenderer.line(xStart, normalizeToWindow(signal[signal2Start]), i++, normalizeToWindow(signal[j+1]));
             }
-//            for (int j = 0; j < dataPoints; j++) {
-//                int xStart = i++;
-//                int signalStart = j++;
-//                if (j < signal.length) {
-//                    shapeRenderer.line(xStart, normalizeToWindow(signal[signalStart]), i++, normalizeToWindow(signal[j]));
-//                }
-//            }
             shapeRenderer.end();
         }
     }
 
     private float normalizeToWindow(short value) {
-        float result = signalWindowYOffset + subWindowHeight + signalMax + ((float)value)*signalMax/Short.MAX_VALUE;
+        float result = (float)signalWindowYOffset + (float)subWindowHeight + (float)signalMax + (float)value*(float)signalMax/(float)Short.MAX_VALUE;
         return result;
     }
 }

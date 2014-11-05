@@ -2,6 +2,8 @@ package com.jdn.mobilebss;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.jdn.mobilebss.controller.AudioController;
 import com.jdn.mobilebss.facade.ISignalRecorder;
 import com.jdn.mobilebss.screens.IntroScreen;
@@ -15,12 +17,16 @@ public class MobileBss extends Game {
     long startTime;
     boolean pastIntro;
 
+    // Used to retrieve textures from the texture pack
+    public static TextureAtlas TEXTURES;
+
     public MobileBss(ISignalRecorder recorder) {
         this.recorder = recorder;
     }
 
     @Override
     public void create() {
+        TEXTURES = new TextureAtlas(Gdx.files.internal("textures/textures.pack"));
         WIDTH = Gdx.app.getGraphics().getWidth();
         HEIGHT = Gdx.app.getGraphics().getHeight();
         this.setScreen(new IntroScreen());

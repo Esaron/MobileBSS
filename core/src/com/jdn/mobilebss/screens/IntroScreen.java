@@ -4,13 +4,14 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Sprite;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.jdn.mobilebss.MobileBss;
 
 
 public class IntroScreen implements Screen {
     private SpriteBatch batch;
-    private Texture img;
+    private Sprite img;
 
     @Override
     public void render(float delta) {
@@ -35,7 +36,7 @@ public class IntroScreen implements Screen {
     @Override
     public void show() {
         batch = new SpriteBatch();
-        img = new Texture("CWRU.jpg");
+        img = MobileBss.TEXTURES.createSprite("CWRU");
 
     }
 
